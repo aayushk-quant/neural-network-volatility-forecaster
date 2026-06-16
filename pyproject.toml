@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nn-volatility-forecaster"
+version = "0.1.0"
+description = "Short-horizon SPY realised-volatility forecasting with a small neural network, benchmarked against HAR, GARCH, EWMA and naive baselines"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "torch",
+    "yfinance",
+    "arch",
+    "statsmodels",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
