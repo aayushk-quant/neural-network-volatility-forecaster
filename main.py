@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import os
 import matplotlib.pyplot as plt
 from src.data import download_prices, build_panel
@@ -16,17 +15,6 @@ def main():
     for H in (1,5):
         print(f"\n===== horizon: {H} day =====")
         res = walk_forward(X, Y, returns, H, initial_train=750, step=252).dropna()
-        naive_losses = qlike_loss(res['naive'], res['truth'])
-
-        diagnostic = pd.DataFrame({
-            'naive_log_vol': res['naive'],
-            'truth_log_vol': res['truth'],
-            'naive_vol': np.exp(res['naive']),
-            'truth_vol': np.exp(res['truth']),
-            'qlike_loss': naive_losses,
-        })
-
-        print(diagnostic.nlargest(10, 'qlike_loss'))
         truth = res['truth']
 
         # scores
