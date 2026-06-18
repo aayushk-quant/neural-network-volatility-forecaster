@@ -5,8 +5,8 @@ from arch import arch_model
 
 HAR_COLS = ['log_rv_1', 'log_rv_5', 'log_rv_22']
 
-def naive_forecast(X: pd.DataFrame, horizon: int) -> pd.Series:
-    return X['log_rv_5'].rename(f'naive_{horizon}')
+def naive_forecast(X, horizon):
+    return X[f'log_rv_{horizon}'].rename(f'naive_{horizon}')
 
 def ewma_forecast(X: pd.DataFrame) -> pd.Series:
     return X['log_ewma'].rename('ewma')

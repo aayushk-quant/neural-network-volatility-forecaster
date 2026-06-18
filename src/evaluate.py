@@ -7,8 +7,8 @@ from .train import nn_forecast
 def rmse(forecast, truth):
     return np.sqrt(np.mean((forecast - truth) ** 2))
 
-def qlike_loss(forecast, truth):
-    var_f = np.exp(2 * forecast)
+def qlike_loss(forecast, truth, vol_floor=1e-2):
+    var_f = np.maximum(np.exp(2 * forecast), vol_floor ** 2)
     var_t = np.exp(2 * truth)
     ratio = var_t / var_f
     return ratio - np.log(ratio) - 1
