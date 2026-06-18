@@ -34,8 +34,9 @@ def walk_forward(X, Y, returns, horizon, initial_train = 750, step = 252) -> pd.
     preds = {'naive': [], 'ewma': [], 'har': [], 'nn': [], 'garch': []}
     truths = []
     for start in range(initial_train, len(X), step):
-        X_train = X.iloc[:start]
-        y_train = Y[target_col].iloc[:start]
+        train_stop = start - horizon + 1
+        X_train = X.iloc[:train_stop]
+        y_train = Y[target_col].iloc[:train_stop]
         X_test = X.iloc[start:start + step]
         if len(X_test) == 0:
             break
@@ -43,8 +44,8 @@ def walk_forward(X, Y, returns, horizon, initial_train = 750, step = 252) -> pd.
         preds['ewma'].append(ewma_forecast(X_test))
         preds['har'].append(har_forecast(X_train, y_train, X_test))
         preds['nn'].append(nn_forecast(X_train, y_train, X_test))
-        train_end = X.index[start - 1]
-        g = garch_forecast(returns, train_end, horizon)
+        forecast_start = X.index[start]
+        g = garch_forecast(returns, forecast_start, horizon)
         preds['garch'].append(g.reindex(X_test.index))
         truths.append(Y[target_col].iloc[start:start + step])
     out = {m: pd.concat(parts) for m, parts in preds.items()}

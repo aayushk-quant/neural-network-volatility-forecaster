@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import os
 import matplotlib.pyplot as plt
 from src.data import download_prices, build_panel
@@ -7,7 +8,7 @@ from src.evaluate import walk_forward, rmse, qlike, qlike_loss, diebold_mariano
 os.makedirs('images', exist_ok=True)
 
 def main():
-    prices = download_prices('SPY', start = '2005-01-01')
+    prices = download_prices('SPY', start = '2005-01-01', end = "2026-06-01")
     panel = build_panel(prices)
     X, Y = assemble(panel, horizons = (1, 5))
     returns = panel['ret']
@@ -15,6 +16,17 @@ def main():
     for H in (1,5):
         print(f"\n===== horizon: {H} day =====")
         res = walk_forward(X, Y, returns, H, initial_train=750, step=252).dropna()
+        naive_losses = qlike_loss(res['naive'], res['truth'])
+
+        diagnostic = pd.DataFrame({
+            'naive_log_vol': res['naive'],
+            'truth_log_vol': res['truth'],
+            'naive_vol': np.exp(res['naive']),
+            'truth_vol': np.exp(res['truth']),
+            'qlike_loss': naive_losses,
+        })
+
+        print(diagnostic.nlargest(10, 'qlike_loss'))
         truth = res['truth']
 
         # scores
